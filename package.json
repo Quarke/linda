@@ -1,0 +1,19 @@
+{
+  "name": "linda",
+  "version": "1.0.0",
+  "description": "A class scheduling webservice",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Quarke/linda.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Quarke/linda/issues"
+  },
+  "homepage": "https://github.com/Quarke/linda#readme"
+}
