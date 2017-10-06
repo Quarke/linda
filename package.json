@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Quarke/linda/issues"
   },
-  "homepage": "https://github.com/Quarke/linda#readme"
+  "homepage": "https://github.com/Quarke/linda#readme",
+  "dependencies": {
+    "express": "^4.16.1"
+  }
 }
