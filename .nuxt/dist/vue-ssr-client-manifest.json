@@ -4,23 +4,22 @@
     "layouts/default.654a4e778c2d7813009e.js.map",
     "layouts/default.654a4e778c2d7813009e.js",
     "common.a78e8bc4095f7c80e43a.js",
-    "app.461f1c5482340d6d8cb2.js",
-    "manifest.604ebc2c44c1ef8e833f.js",
+    "app.093a34c6b95b5978a7df.js",
+    "manifest.5950a10485dde51459ed.js",
     "common.5cdc38cbc7fd5f8fa79b1bfca12cc2d9.css",
     "LICENSES",
     "pages/index.65c6dc63c5b295f0ea42.js",
     "pages/index.65c6dc63c5b295f0ea42.js.map",
     "common.a78e8bc4095f7c80e43a.js.map",
-    "app.461f1c5482340d6d8cb2.js.map",
+    "app.093a34c6b95b5978a7df.js.map",
     "common.5cdc38cbc7fd5f8fa79b1bfca12cc2d9.css.map",
-    "manifest.604ebc2c44c1ef8e833f.js.map",
-    "index.spa.html",
-    "index.ssr.html"
+    "manifest.5950a10485dde51459ed.js.map",
+    "index.spa.html"
   ],
   "initial": [
-    "manifest.604ebc2c44c1ef8e833f.js",
+    "manifest.5950a10485dde51459ed.js",
     "common.a78e8bc4095f7c80e43a.js",
-    "app.461f1c5482340d6d8cb2.js"
+    "app.093a34c6b95b5978a7df.js"
   ],
   "async": [
     "layouts/default.654a4e778c2d7813009e.js",

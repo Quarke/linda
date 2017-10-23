@@ -3,6 +3,7 @@ const { resolve } = require('path');
 module.exports = {
   srcDir: resolve(__dirname, 'client'),
   dev: process.env.NODE_ENV !== 'production',
+  mode: 'spa',
   head: {
     titleTemplate: 'Linda',
     meta: [

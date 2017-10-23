@@ -31,9 +31,11 @@
     "build": "nuxt build",
     "dev": "DEBUG=nuxt:* nodemon --watch src/  --watch client/ --watch config/ src/index.js",
     "prestart": "npm run build",
-    "start": "NODE_ENV=production node src/",
+    "ssrStart": "NODE_ENV=production node src/",
+    "start": "nuxt start",
+    "gen": "nuxt generate",
     "mocha": "mocha test/ --recursive",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run generate"
   },
   "dependencies": {
     "axios": "^0.16.2",
