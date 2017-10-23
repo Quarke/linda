@@ -1,8 +1,8 @@
 {
  "name": "linda",
  "version": "1.0.0",
- "description": "personalblog",
- "author": "Awesome Author",
+ "description": "class scheduling tool",
+ "author": "tflanag2",
  "private": true,
  "scripts": {
    "postinstall": "npm install express"
