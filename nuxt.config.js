@@ -23,8 +23,6 @@ module.exports = {
   build: {
     vendor: [
       'feathers/client',
-      'feathers-socketio/client', 
-      'socket.io-client',
       'feathers-hooks',
       'feathers-authentication-client',
       'vuetify'
