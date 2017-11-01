@@ -8,7 +8,6 @@ yarn-error.log*
 # Temp files
 *.swp
 *~
-dist/
 .dist/
 
 # Cookies, don't want this public
