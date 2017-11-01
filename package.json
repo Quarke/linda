@@ -40,6 +40,7 @@
   "dependencies": {
     "async": "^2.5.0",
     "axios": "^0.16.2",
+    "bluebird": "^3.5.1",
     "body-parser": "^1.18.0",
     "cheerio": "^1.0.0-rc.2",
     "compression": "^1.7.0",
@@ -70,6 +71,7 @@
     "normalize.css": "^7.0.0",
     "nuxt": "^1.0.0-rc11",
     "path": "^0.12.7",
+    "pg": "7.3.0",
     "progress": "^2.0.0",
     "serve-favicon": "^2.4.3",
     "socket.io-client": "^2.0.3",

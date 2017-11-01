@@ -3,7 +3,15 @@ const ProgressBar = require('progress');
 const fs = require('fs');
 const async = require('async');
 const cheerio = require('cheerio');
+const Promise = require('bluebird');
 
+const { Client } = require('pg');
+
+const db = new Client({
+  connectionString: 'postgres://mikzgdxuejpmys:11bc15e94ab74ccd8bc2770b67f0c775cd38195d30a6bd0145890082e8ab800b@ec2-54-163-245-150.compute-1.amazonaws.com:5432/d1uobgd9g5lr4q',
+  ssl: true,
+});
+db.connect();
 var bar;
 
 const classUrl = "https://class-search-secure.nd.edu/reg/srch/ClassSearchServlet";
@@ -17,7 +25,7 @@ function scrape() {
   const $ = cheerio.load(allClassPage);
   classes = $('table#resulttable tbody tr').get();
 
-  console.log(`Getting detail pages for ${classes.length} classes`);
+  console.log(`Getting details for ${classes.length} classes`);
   bar = new ProgressBar(':bar :percent :eta s remaining', {total: classes.length});
   async.eachLimit(classes, 5,
     (c, next) => {
@@ -37,28 +45,17 @@ function scrape() {
       // Credits in col 2
       details.credits = cols.eq(2).text();
 
-      // Professor in col 9
-      details.professor = cols.eq(9).children('a').eq(0).text();
-
       // Times in col 10
       let time = cols.eq(10).text();
       let re = /([M|T|W|R|F|S|N])/g;
-      let r = time.match(re);
-      if (r) {
-        details.m = r.indexOf('M') >= 0;
-        details.t = r.indexOf('T') >= 0;
-        details.w = r.indexOf('W') >= 0;
-        details.r = r.indexOf('R') >= 0;
-        details.f = r.indexOf('F') >= 0;
-        details.s = r.indexOf('S') >= 0;
-        details.n = r.indexOf('N') >= 0;
-      }
-      re = /([0-9]+\:[0-9]+[A|P])/g;
-      r = time.match(re);
-      if (r) {
-        details.start_time = convertTimeToDateObj(r[0]);
-        details.end_time = convertTimeToDateObj(r[1]);
-      }
+      let r = time.match(re) || [];
+      details.m = r.indexOf('M') >= 0;
+      details.t = r.indexOf('T') >= 0;
+      details.w = r.indexOf('W') >= 0;
+      details.r = r.indexOf('R') >= 0;
+      details.f = r.indexOf('F') >= 0;
+      details.s = r.indexOf('S') >= 0;
+      details.n = r.indexOf('N') >= 0;
 
 
       // Details link in col 0, use to get rest of details
@@ -73,6 +70,7 @@ function scrape() {
     (err) => {
       console.log('error', err);
       console.log('done');
+      db.end();
     }
   )
 }
@@ -82,29 +80,45 @@ function getDetails(url, details, next) {
   exec(detailsCommand, (err, stdout, stderr) => {
     let detailsPage = stdout.toString();
     const $ = cheerio.load(detailsPage);
-    details.description = $('table.datadisplaytable tbody tr').eq(1).children('td').eq(0).text().replace(/(\r\n|\n|\r)/gm, '');
-    details.description = details.description.match(/Course.Description\:(.*)Associated.Term\:/)[1];
-    
-    //TODO insert into database
-    bar.tick();
-    next(null);
+    let fullDescription = $('table.datadisplaytable tbody tr').eq(1).children('td').eq(0).text().replace(/(\r\n|\n|\r)/gm, '');
+    details.description = fullDescription.match(/Course.Description\:(.*)Associated.Term\:/)[1];
+
+    db.query('INSERT INTO class(crn, course_number, title, description, abbreviation, credits) VALUES($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING RETURNING *',
+      [
+        details.crn,
+        details.courseNumber,
+        details.title,
+        details.description,
+        details.subj,
+        details.credits
+      ]
+    ).then((res) => {
+      let attributes = fullDescription.match(/Course Attributes: (.*)Registration Availability/);
+      if (!attributes) { // some grad classes have no attributes
+        return Promise.resolve();
+      }
+      return Promise.map(attributes[1].split(','), (attr) => {
+        // Attributes are of form CODE - NAME, sometimes space around "-"
+        let r = attr.match(/([A-Z0-9]+) *- *(.*)/);
+        if (!r) return Promise.resolve();
+        let code = r[1].replace(/^\s+|\s+$/g, ""); // strip leading and trailing whitespace
+        let name = r[2].replace(/^\s+|\s+$/g, "");
+
+        return Promise.all(
+          [
+            db.query('INSERT INTO attribute VALUES($1, $2) ON CONFLICT DO NOTHING', [code, name]),
+            db.query('INSERT INTO class_attributes VALUES($1, $2)', [code, details.crn])
+          ]
+        );
+      })
+    }).then(() => {
+      bar.tick();
+      next(null);
+    }).catch((err) => {
+      console.log(`Error: ${err.stack || err}`);
+      next(null);
+    });
   });
-
-}
-
-function convertTimeToDateObj(time) {
-  let pm = time.substring(time.length-1) == 'P';
-  time = time.substring(0, time.length-1);
-  let hours, min;
-  [hours, min] = time.split(":");
-  hours = parseInt(hours); min = parseInt(min);
-  if (pm = 'P' && hours < 12) {
-    hours += 12;
-  }
-
-  let d = new Date();
-  d.setUTCHours(hours, min, 0);
-  return d;
 }
 
 scrape();

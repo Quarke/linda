@@ -11,6 +11,10 @@ yarn-error.log*
 dist/
 .dist/
 
+# Temp data, gets stored in db
+*.json
+*.html
+
 # Cookies, don't want this public
 cookies.txt
 
