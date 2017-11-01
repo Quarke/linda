@@ -28,7 +28,7 @@
   "scripts": {
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint src/. test/. --config .eslintrc.js",
-    "build": "nuxt build",
+    "build": "nuxt build && cp serve/* dist/",
     "dev": "DEBUG=nuxt:* nodemon --watch src/  --watch client/ --watch config/ src/index.js",
     "prestart": "npm run build",
     "ssrStart": "NODE_ENV=production node src/",
