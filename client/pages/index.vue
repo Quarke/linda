@@ -63,9 +63,8 @@
           </tr>
         </template>
         <template slot="expand" scope="props">
-          <p>here</p>
           <v-card flat>
-            <v-card-text> This new text </v-card-text>
+            <v-card-text> {{props.item.description}} </v-card-text>
           </v-card>
         </template>
       </v-data-table>
