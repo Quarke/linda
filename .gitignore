@@ -9,7 +9,6 @@ yarn-error.log*
 *.swp
 *~
 .dist/
-dist/
 
 # Temp data, gets stored in db
 *.json

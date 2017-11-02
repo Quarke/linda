@@ -50,6 +50,7 @@
        <v-data-table
         :headers="headers"
         :items="resp.rows"
+        hide-actions
         item-key="name"
       >
         <template slot="items" scope="props">
