@@ -1,11 +1,10 @@
-const db = require('../db');
-
+//const db = require('../db');
 // Get building names
-db.query('SELECT * FROM building', [], (res) => {
-  console.log('result of query', res);
-});
-
-var buildingName = ['Flanagan Hall'];
+// db.query('SELECT * FROM building', [], (res) => {
+//   console.log('result of query', res);
+// });
+//
+// var buildingName = ['Flanagan Hall'];
 
 
 //Insert new building
