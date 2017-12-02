@@ -1,3 +1,5 @@
+const db = require('../../db');
+
 module.exports.get_classes = (data, resolve, reject) => {
     console.log(data)
 

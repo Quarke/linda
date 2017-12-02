@@ -7,10 +7,6 @@
   "keywords": [
     "feathers"
   ],
-  "nuxt": {
-    "host": "0.0.0.0",
-    "port": "3030"
-  },
   "author": {
     "name": "Tommy Flanagan",
     "email": "tflanag2@nd.edu"

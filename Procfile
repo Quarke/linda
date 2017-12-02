@@ -1,1 +1,1 @@
-web: npm run gen && node index.js
+web: npm run dev
