@@ -47,15 +47,16 @@ for(let i = 0; i < building_coords.length; i++) {
       let theta2 = toRadians(building2.lat);
       let delta_theta = toRadians(building2.lat-building1.lat);
       let delta_lon = toRadians(building2.long-building1.long);
-      console.log(theta1, building1.building);
       let a = Math.sin(delta_theta/2) * Math.sin(delta_theta/2) +
               Math.cos(theta1) * Math.cos(theta2) *
               Math.sin(delta_lon/2) * Math.sin(delta_lon/2);
       let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
       let d = R * c;
-      let miles = d/0.6213712;
+      let miles = (d/1000)*0.6213712;
       building_distances.push({building1: building1.building, building2: building2.building, distance: miles});
     }
   }
 }
+
+console.log(building_distances);
