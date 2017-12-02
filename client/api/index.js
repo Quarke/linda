@@ -5,7 +5,6 @@ import feathersStorage from '@/utils/feathers-storage';
 import rest from 'feathers-rest/client';
 import axios from 'axios';
 
-
 const api = feathers()
   .configure( rest('http://localhost:3030').axios(axios) )
   .configure( hooks() )

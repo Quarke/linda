@@ -17,5 +17,7 @@ module.exports = {
         callback(res);
       }
     })
-  }
+  },
+
+  pool: pool
 }

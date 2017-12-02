@@ -2,7 +2,7 @@
 const logger = require('winston')
 const app = require('./app')
 
-const port = app.get('port')
+const port = process.env.PORT || app.get('port')
 
 process.on('unhandledRejection', (reason, p) => {
   return logger.error('Unhandled Rejection at: Promise ', p, reason)
