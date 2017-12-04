@@ -1,3 +1,11 @@
+const { Client } = require('pg');
+
+const db = new Client({
+  connectionString: 'postgres://lnpzytoztwnbdu:106e3de5d15291feb1e98814e943d2da50c3f88d2e76438d3e37321a347c868f@ec2-107-22-250-33.compute-1.amazonaws.com:5432/db6rsoddji4lk9',
+  ssl: true,
+});
+db.connect();
+
 function toRadians(degrees) {
   return degrees * (Math.PI / 180)
 }
@@ -55,8 +63,15 @@ for(let i = 0; i < building_coords.length; i++) {
       let d = R * c;
       let miles = (d/1000)*0.6213712;
       building_distances.push({building1: building1.building, building2: building2.building, distance: miles});
+      db.query('INSERT INTO distance_from (building1, building2, distance_miles) VALUES($1, $2, $3) ON CONFLICT DO NOTHING', [building1.building, building2.building, miles], (err, res) => {
+        console.log("here");
+        if (err) {
+          console.log(err);
+        }
+        if (res) {
+          console.log(res);
+        }
+      })
     }
   }
 }
-
-console.log(building_distances);
