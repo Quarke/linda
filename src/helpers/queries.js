@@ -8,6 +8,10 @@ module.exports.get_classes = (data, resolve, reject) => {
     let attribute = data.query.attribute
     let building = data.query.building
     let subject = data.query.subject
+    let start_after = data.query.start_after
+    let start_before = data.query.start_before
+
+
     let query_str = ""
     let select_array = [`SELECT * FROM class`]
     let where_array = []
@@ -34,6 +38,14 @@ module.exports.get_classes = (data, resolve, reject) => {
       select_array.push(`subject`)
       var_str = `class.subject = '${subject}' AND class.subject = subject.abbreviation`
       where_array.push(var_str)
+    }
+    if(start_after) {
+      select_array.push("start_time")
+      where_array.push(`class_meeting.start_time >= '${start_after}'`)
+    }
+    if(start_before) {
+      select_array.push("start_time")
+      where_array.push(`class_meeting.start_time >= '${start_before}'`)
     }
 
     query_str = select_array.join(", ")
