@@ -166,13 +166,13 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
     return new Promise( (resolve, reject) => {
       c.start_after = data.min_time || '0:00';
       c.start_before = data.max_time || '23:59';
-      c.m = data.m;
-      c.t = data.t;
-      c.w = data.w;;
-      c.r = data.r;
-      c.f = data.f;
-      c.s = data.s;
-      c.n = data.n;
+      c.m = data.monday;
+      c.t = data.tuesday;
+      c.w = data.wednesday;
+      c.r = data.thursday;
+      c.f = data.friday;
+      c.s = data.saturday;
+      c.n = data.sunday;
       module.exports.get_classes(c, resolve, reject)
     })
   })
@@ -189,7 +189,7 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
       }
       resolve({
         data: res,
-        total: coms.length,
+        total: result.length,
         actual: res.length
       });
     }).catch(reject);
