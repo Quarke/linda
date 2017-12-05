@@ -209,8 +209,13 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
       let result = coms.filter(isValidSchedule);
       console.log("result len", result.length);
       let res = [];
+      let used = Set();
       for (let i = 0; i < 500; ++i) {
-        res.push(result[i]);
+        let k = Math.random() * result.length;
+        while (used.has(k)) {
+          k = Math.random() * result.length;
+        }
+        res.push(result[k]);
       }
       resolve({
         data: res,
