@@ -209,13 +209,27 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
       let result = coms.filter(isValidSchedule);
       console.log("result len", result.length);
       let res = [];
-      let used = Set();
-      for (let i = 0; i < 500; ++i) {
-        let k = Math.random() * result.length;
-        while (used.has(k)) {
-          k = Math.random() * result.length;
+      let used = new Set();
+      if (result.length < 500) {
+        console.log("shuffling");
+        for (i = result.length - 1; i > 0; i--) {
+          j = Math.floor(Math.random() * (i + 1));
+          x = result[i];
+          result[i] = result[j];
+          result[j] = x;
         }
-        res.push(result[k]);
+        for (let r of result) {
+          res.push(r);
+        }
+      } else {
+        for (let i = 0; i < 500; ++i) {
+          let k = Math.floor(Math.random() * result.length);
+          while (used.has(k)) {
+            k = Math.floor(Math.random() * result.length);
+          }
+          used.add(k);
+          res.push(result[k]);
+        }
       }
       resolve({
         data: res,
