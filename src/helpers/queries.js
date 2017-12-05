@@ -36,8 +36,9 @@ module.exports.get_classes = (data, resolve, reject) => {
 
     if(professor) {
       professor_array = professor.split(' ');
+      console.log(professor_array);
       var_str = [];
-      for(name in professor_array) {
+      for(name of professor_array) {
         var_str.push(`professor.name LIKE '%${name}%'`);
       }
       var_str = var_str.join(' OR ');
@@ -47,7 +48,7 @@ module.exports.get_classes = (data, resolve, reject) => {
     if(professor_rating) {
       from_array.add('prof_reviews');
       from_array.add('professor_class');
-      var_str = `avg_score > '${professor_rating}' AND prof_reviews.prof_email = professor_class.prof_email`;
+      var_str = `avg_score >= '${professor_rating}' AND prof_reviews.prof_email = professor_class.prof_email`;
       where_array.push(var_str);
     }
     if(keyword) {
