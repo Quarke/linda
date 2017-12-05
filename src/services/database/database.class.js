@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-const db = require('../../../db')
+const db = require('../../../db');
+const queries = require('../../helpers/queries');
 
 class Service {
   constructor (options) {
