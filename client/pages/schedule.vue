@@ -234,6 +234,7 @@
       make_schedule_request: function( ) {
         return feathers.service( 'database' ).create( { queries: this.queries, monday: this.monday, tuesday: this.tuesday, wednesday: this.wednesday, thursday: this.thursday, friday: this.friday, saturday: this.saturday, sunday: this.sunday, min_time: this.min_time, max_time: this.max_time} )
         .then( ( resp ) => {
+          console.log('resp', resp);
           this.resp = resp || "No results"
           return { 
             resp: resp

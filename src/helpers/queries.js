@@ -65,7 +65,7 @@ module.exports.get_classes = (data, resolve, reject) => {
     if(min_cnum) {
       where_array.push(`course_number >= '${min_cnum}'`);
     }
-    if(attributes) {
+    if(attributes.length) {
       from_array.add(`class_attributes`)
       var_str = [];
       attributes.forEach((attr) => {
@@ -81,7 +81,7 @@ module.exports.get_classes = (data, resolve, reject) => {
       var_str = `class_meeting.building = '${building}'`
       where_array.push(var_str)
     }
-    if(subjects) {
+    if(subjects.length) {
       var_str = [];
       subjects.forEach((subject) => {
         var_str.push(`class.subject = '${subject}'`)
@@ -186,7 +186,7 @@ module.exports.get_classes = (data, resolve, reject) => {
 }
 
 module.exports.make_schedule = (data, params, resolve, reject) => {
-  let class_promises = Promise.map(data.classes, (c) => {
+  let class_promises = Promise.map(data.queries, (c) => {
     return new Promise( (resolve, reject) => {
       c.start_after = data.min_time || '0:00';
       c.start_before = data.max_time || '23:59';
@@ -203,6 +203,7 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
 
   Promise.all(class_promises)
     .then((class_results) => {
+      class_results = class_results.filter((c) => c.length);
       let coms = Combinatorics.cartesianProduct(...class_results);
       console.log("num coms", coms.length);
       let result = coms.filter(isValidSchedule);
