@@ -141,12 +141,36 @@
                 </template>
               </v-list>
 
-              <v-btn color="green" v-if="queries.length != 0" @click="make_schedule_request()"> Submit </v-btn>
+              <v-btn color="green" v-if="queries.length != 0" @click="make_schedule_request().then(change_live_result)"> Submit </v-btn>
             </v-card>
           </v-stepper-content>
           
           <v-stepper-content step="3">
-            <v-card color="grey lighten-1" class="mb-5"></v-card>
+            <v-card color="lighten-1" class="mb-5">
+              <v-expansion-panel expand>
+                <v-expansion-panel-content v-for="(course, i) in live_result" :key="i">
+                  <div slot="header">{{course.subject}}</div>
+                  <v-card>
+                    <v-card-title primary-title>
+                      <div>
+                        <h3 class="headline mb-0">{{course.title}}</h3>
+                        <div>CRN: {{course.crn}}<br>Course Number: {{course.course_number}}</div>
+                        <div>
+                            <v-chip v-if="course.monday" color="green" text-color="white"> <v-avatar class="green darken-4">M</v-avatar>{{course.monday.start_time}}-{{course.monday.end_time}}</v-chip>
+                            <v-chip v-if="course.tuesday" color="green" text-color="white"> <v-avatar class="green darken-4">Tu</v-avatar>{{course.tuesday.start_time}}-{{course.tuesday.end_time}}</v-chip>
+                            <v-chip v-if="course.wednesday" color="green" text-color="white"> <v-avatar class="green darken-4">W</v-avatar>{{course.wednesday.start_time}}-{{course.wednesday.end_time}}</v-chip>
+                            <v-chip v-if="course.thursday" color="green" text-color="white"> <v-avatar class="green darken-4">Th</v-avatar>{{course.thursday.start_time}}-{{course.thursday.end_time}}</v-chip>
+                            <v-chip v-if="course.friday" color="green" text-color="white"> <v-avatar class="green darken-4">F</v-avatar>{{course.friday.start_time}}-{{course.friday.end_time}}</v-chip>
+                            <v-chip v-if="course.saturday" color="green" text-color="white"> <v-avatar class="green darken-4">Sat</v-avatar>{{course.saturday.start_time}}-{{course.saturday.end_time}}</v-chip>
+                            <v-chip v-if="course.sunday" color="green" text-color="white"> <v-avatar class="green darken-4">Sun</v-avatar>{{course.sunday.start_time}}-{{course.sunday.end_time}}</v-chip>
+                        </div>
+                      </div>
+                    </v-card-title>
+                    <v-card-text class="grey lighten-3">{{course.description}}</v-card-text>
+                  </v-card>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-card>
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -183,7 +207,9 @@
       friday: true,
       saturday: false,
       sunday: false,
-
+      live_index: 0,
+      live_result: null,
+      results: []
     }),
     asyncData (context) {
       // contact the backend service for {} [] {} = all ] logs
@@ -216,6 +242,28 @@
       check: function(){
         console.log(this.resp)
       },
+
+      change_live_result (shift){
+        console.log("in ze method")
+        console.log(this.results)
+        console.log(this.live_index)
+        if(!Number.isInteger(shift)) {
+          shift = 0
+          this.live_index = 0
+        }
+        if(this.results && this.results.length > 0){
+          this.live_index += shift;
+          console.log(this.live_index)
+
+          this.live_index = this.live_index <= 0 ? 0 : this.live_index >= this.results.legnth - 1 ? this.results.legnth - 1 : this.live_index;
+
+          console.log(this.live_index)
+
+          let curr_result = this.results[this.live_index]
+          this.live_result = curr_result
+          console.log(this.live_result)
+        }
+      },
       submit () {
         let new_query = {
           'min_cnum': this.min_cnum,
@@ -231,13 +279,14 @@
         this.active_subj = []
         this.active_attr = []
       },
-      make_schedule_request: function( ) {
+      make_schedule_request ( ) {
+        let self = this
         return feathers.service( 'database' ).create( { queries: this.queries, monday: this.monday, tuesday: this.tuesday, wednesday: this.wednesday, thursday: this.thursday, friday: this.friday, saturday: this.saturday, sunday: this.sunday, min_time: this.min_time, max_time: this.max_time} )
         .then( ( resp ) => {
-          console.log('resp', resp);
-          this.resp = resp || "No results"
+          console.log(resp.data)
+          self.results = resp.data
           return { 
-            resp: resp
+            results: resp.data
           }
         })
         .catch( err => {
