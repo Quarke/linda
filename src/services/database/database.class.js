@@ -9,6 +9,8 @@ class Service {
 
   find (params) {
     return new Promise( (resolve, reject) => {
+      if (params.query.subject) params.query.subjects = [params.query.subject];
+      if (params.query.attribute) params.query.attributes = [params.query.attribute];
       queries.get_classes(params.query, resolve, reject)
     })
   }
