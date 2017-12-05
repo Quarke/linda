@@ -21,12 +21,35 @@ module.exports.get_classes = (data, resolve, reject) => {
     let f = data.f;
     let s = data.s;
     let n = data.n;
-
+    let professor = data.professor;
+    let professor_rating = data.professor_rating;
 
     let query_str = ""
     let from_array = new Set([`SELECT * FROM class`]);
     let where_array = []
     let var_str = ""
+
+    from_array.add('professor');
+    from_array.add('professor_class');
+    where_array.push('professor_class.crn = class.crn');
+    where_array.push('professor.email = professor_class.prof_email');
+
+    if(professor) {
+      professor_array = professor.split(' ');
+      var_str = [];
+      for(name in professor_array) {
+        var_str.push(`professor.name LIKE '%${name}%'`);
+      }
+      var_str = var_str.join(' OR ');
+      var_str = '(' + var_str + ')';
+      where_array.push(var_str);
+    }
+    if(professor_rating) {
+      from_array.add('prof_reviews');
+      from_array.add('professor_class');
+      var_str = `avg_score > '${professor_rating}' AND prof_reviews.prof_email = professor_class.prof_email`;
+      where_array.push(var_str);
+    }
     if(keyword) {
       var_str = `(description LIKE '%${keyword}%' OR title LIKE '%${keyword}%')`
       where_array.push(var_str)
@@ -137,7 +160,7 @@ module.exports.get_classes = (data, resolve, reject) => {
               if (res[j].attr_code) {
                 val.attributes.add(res[j].attr_code);
                 if (val.attributes.length > 1) {
-                  console.log("ATTRSSSSSS", val); 
+                  console.log("ATTRSSSSSS", val);
                 }
               }
             }
