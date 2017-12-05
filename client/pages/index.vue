@@ -11,6 +11,15 @@
           label="Campus"
           :items="campus_list"
         ></v-select>
+        <v-text-field
+          label="Professor"
+          v-model="professor"
+        ></v-text-field>
+        <v-select
+          v-model="professor_rating"
+          label="Minimum Professor Rating"
+          :items="professor_rating_list"
+        ></v-select>
         <v-select
           v-model="subject"
           label="Subject"
@@ -20,6 +29,15 @@
         <v-text-field
           label="CRN"
           v-model="crn"
+        ></v-text-field>
+
+        <v-text-field
+          label="Max Course Number"
+          v-model="max_cnum"
+        ></v-text-field>
+        <v-text-field
+          label="Min Course Number"
+          v-model="min_cnum"
         ></v-text-field>
 
        <v-select
@@ -46,7 +64,7 @@
         </v-btn>
       </v-form>
     </v-flex>
-    <v-flex md8>
+    <v-flex md12>
        <v-data-table
         :headers="headers"
         :items="resp"
@@ -60,6 +78,7 @@
             <td class="text-xs-right">{{ props.item.crn }}</td>
             <td class="text-xs-right">{{ props.item.subject }}</td>
             <td class="text-xs-right">{{ props.item.credits }}</td>
+            <td class="text-xs-right">{{ props.item.name }}</td>
           </tr>
         </template>
         <template slot="expand" scope="props">
@@ -87,6 +106,7 @@
           { text: 'CRN', value: 'crn' },
           { text: 'Subject', value: 'subject' },
           { text: 'Credits', value: 'credit' },
+          { text: 'Professor', value: 'professor' },
         ],
       keyword: '',
       campus: '',
@@ -94,7 +114,19 @@
       crn: '',
       attribute: '',
       select: null,
-      resp: "No results",
+      resp: [],
+      professor: '',
+      professor_rating: '',
+      min_cnum: '',
+      max_cnum: '',
+      professor_rating_list: [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       campus_list: [
         'Campus 1',
         'Campus 2',
@@ -131,10 +163,20 @@
     },
     methods: {
       getThings: function( item ) {
-        return feathers.service( 'database' ).find( { query: {'keyword': this.keyword, 'building': this.campus, 'subject': this.subject, 'crn': this.crn, 'attribute': this.attribute}} )
+        return feathers.service( 'database' ).find( { query: {
+            'keyword': this.keyword,
+            'building': this.campus,
+            'subject': this.subject,
+            'crn': this.crn,
+            'attribute': this.attribute,
+            'professor': this.professor,
+            'professor_rating': this.professor_rating,
+            'max_cnum': this.max_cnum,
+            'min_cnum': this.min_cnum
+        }} )
         .then( ( resp ) => {
           console.log(resp)
-          this.resp = resp || "No results"
+          this.resp = resp || []
           return { 
             resp: resp
           }
