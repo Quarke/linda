@@ -170,6 +170,9 @@
                   </v-card>
                 </v-expansion-panel-content>
               </v-expansion-panel>
+              <div class="text-xs-center">
+                <v-pagination :length="results.length" v-model="page" :total-visible="10"></v-pagination>
+              </div>
             </v-card>
           </v-stepper-content>
         </v-stepper-items>
@@ -185,6 +188,7 @@
 
   export default {
     data: () => ({
+      page: 1,
       min_time: null,
       max_time: null,
       menu1: false,
@@ -252,7 +256,7 @@
           this.live_index = 0
         }
         if(this.results && this.results.length > 0){
-          this.live_index += shift;
+          this.live_index = shift;
           console.log(this.live_index)
 
           this.live_index = this.live_index <= 0 ? 0 : this.live_index >= this.results.legnth - 1 ? this.results.legnth - 1 : this.live_index;
@@ -283,6 +287,8 @@
         let self = this
         return feathers.service( 'database' ).create( { queries: this.queries, monday: this.monday, tuesday: this.tuesday, wednesday: this.wednesday, thursday: this.thursday, friday: this.friday, saturday: this.saturday, sunday: this.sunday, min_time: this.min_time, max_time: this.max_time} )
         .then( ( resp ) => {
+          console.log(resp)
+          resp.data = resp.data.filter(n => n)
           console.log(resp.data)
           self.results = resp.data
           return { 
@@ -293,6 +299,12 @@
           console.log(err)
         })
       },
+    },
+    watch: {
+      page: function (val) {
+        this.live_index = val - 1
+        this.change_live_result(val)
+      }
     }
   }
 </script>
