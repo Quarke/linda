@@ -49,7 +49,7 @@
     <v-flex md8>
        <v-data-table
         :headers="headers"
-        :items="resp.rows"
+        :items="resp"
         hide-actions
         item-key="name"
       >
@@ -133,7 +133,7 @@
       getThings: function( item ) {
         return feathers.service( 'database' ).find( { query: {'keyword': this.keyword, 'building': this.campus, 'subject': this.subject, 'crn': this.crn, 'attribute': this.attribute}} )
         .then( ( resp ) => {
-          console.log(resp.rows[0])
+          console.log(resp)
           this.resp = resp || "No results"
           return { 
             resp: resp
