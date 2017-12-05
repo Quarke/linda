@@ -1,6 +1,7 @@
 <template>
   <v-app
     id="inspire"
+    color="green"
   >
     <v-navigation-drawer
       fixed
@@ -8,9 +9,10 @@
       :clipped="clipped"
       v-model="drawer"
       app
+      color="green"
     >
-      <v-list dense>
-        <v-list-tile v-for="item in items" :key="item.text" :to="item.to">
+      <v-list dense >
+        <v-list-tile v-for="item in items" :key="item.text" :to="item.to" color="green">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
@@ -23,7 +25,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar color="green" dense fixed clipped-left app>
+    <v-toolbar color="blue" dense fixed clipped-left app>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-btn
