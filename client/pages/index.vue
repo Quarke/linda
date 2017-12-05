@@ -1,6 +1,6 @@
 <template>
-  <v-layout align-content-center justify-center>
-    <v-flex md4>
+  <v-layout >
+    <v-flex md4 pr-5>
       <v-form v-model="valid" ref="form" lazy-validation>
         <v-text-field
           label="Keyword"
@@ -54,13 +54,13 @@
           @click="getThings"
           :disabled="!valid"
         >
-          submit
+          Submit
         </v-btn>
         <v-btn
-          @click="check"
+          @click="clear"
           :disabled="!valid"
         >
-          check
+          Clear
         </v-btn>
       </v-form>
     </v-flex>
@@ -69,7 +69,7 @@
         :headers="headers"
         :items="resp"
         hide-actions
-        item-key="name"
+        item-key="crn"
       >
         <template slot="items" scope="props">
           <tr @click="props.expanded = !props.expanded">
@@ -185,9 +185,18 @@
           console.log(err)
         })
       },
-      check: function(){
-        console.log(this.resp)
-      }
+      clear: function(){
+        this.valid = true
+        this.keyword = ''
+        this.campus = ''
+        this.subject = ''
+        this.crn = ''
+        this.attribute = ''
+        this.professor = ''
+        this.professor_rating = ''
+        this.min_cnum = ''
+        this.max_cnum = ''
+      },
     }
   }
 </script>

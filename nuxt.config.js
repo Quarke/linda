@@ -29,7 +29,7 @@ module.exports = {
     ],
     extractCSS: true,
   },
-  loading: { color: '#64dd17' },
+  loading: { color: '#FF4500' },
   css: [
   'normalize.css',
   '~/assets/style/app.styl'

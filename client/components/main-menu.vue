@@ -51,7 +51,7 @@ export default {
 }
 
 .main-menu__item .nuxt-link-active {
-  color: #92D3CE;
+  color: #FF4500;
 }
 
 .main-menu__item + .main-menu__item {

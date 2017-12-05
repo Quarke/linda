@@ -65,7 +65,7 @@ module.exports.get_classes = (data, resolve, reject) => {
     if(min_cnum) {
       where_array.push(`course_number >= '${min_cnum}'`);
     }
-    if(attributes.length) {
+    if(attributes && attributes.length) {
       from_array.add(`class_attributes`)
       var_str = [];
       attributes.forEach((attr) => {
@@ -81,7 +81,7 @@ module.exports.get_classes = (data, resolve, reject) => {
       var_str = `class_meeting.building = '${building}'`
       where_array.push(var_str)
     }
-    if(subjects.length) {
+    if(subjects && subjects.length) {
       var_str = [];
       subjects.forEach((subject) => {
         var_str.push(`class.subject = '${subject}'`)

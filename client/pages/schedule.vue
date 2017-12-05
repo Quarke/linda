@@ -19,9 +19,10 @@
                   v-model="min_cnum"
                 ></v-text-field>
                 <v-text-field
-                  label="Minimum course number"
+                  label="Maximum course number"
                   v-model="max_cnum"
                 ></v-text-field>
+                <br>
                 <v-select
                   label="Select"
                   v-bind:items="subject_list"
