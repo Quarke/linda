@@ -9,31 +9,29 @@ class Service {
 
   find (params) {
     return new Promise( (resolve, reject) => {
-      queries.get_classes(params, resolve, reject)
+      queries.get_classes(params.query, resolve, reject)
     })
   }
 
 
   get (id, params) {
     return new Promise( (resolve, reject) => {
-       db.query('SELECT * FROM building', [], (res_building) => {
-        db.query('SELECT * FROM subject', [], (res_subject) => {
-          db.query('SELECT * FROM attribute', [], (res_attri) => {
-          resolve({
-            buildings: res_building, subjects: res_subject, attributes: res_attri
+      db.query('SELECT * FROM building ORDER BY building', [], (res_building) => {
+        db.query('SELECT * FROM subject ORDER BY subject', [], (res_subject) => {
+          db.query('SELECT * FROM attribute ORDER BY attribute', [], (res_attri) => {
+            resolve({
+              buildings: res_building, subjects: res_subject, attributes: res_attri
+            })
           })
         })
       })
     })
-  })
   }
 
   create (data, params) {
-    if (Array.isArray(data)) {
-      return Promise.all(data.map(current => this.create(current)));
-    }
-
-    return Promise.resolve(data);
+    return new Promise((resolve, reject) => {
+      queries.make_schedule(data, params, resolve, reject)
+    })
   }
 
   update (id, data, params) {
