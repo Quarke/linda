@@ -5,7 +5,14 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [ 
+      function(hook){
+        console.log(hook.data)
+
+        console.log("Queries zoomed in")
+        console.log(hook.data.queries)
+      }
+    ],
     update: [],
     patch: [],
     remove: []
