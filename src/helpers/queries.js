@@ -22,8 +22,7 @@ module.exports.get_classes = (data, resolve, reject) => {
     let s = data.s;
     let n = data.n;
     let professor = data.professor;
-    let professor_rating = data.professor_rating;
-
+    let professor_rating = data.professor_rating || 0;
     let query_str = ""
     let from_array = new Set([`SELECT * FROM class`]);
     let where_array = []
@@ -45,7 +44,7 @@ module.exports.get_classes = (data, resolve, reject) => {
       var_str = '(' + var_str + ')';
       where_array.push(var_str);
     }
-    if(professor_rating) {
+    if(professor_rating !== null && professor_rating !== undefined) {
       from_array.add('prof_reviews');
       from_array.add('professor_class');
       var_str = `avg_score >= '${professor_rating}' AND prof_reviews.prof_email = professor_class.prof_email`;
@@ -160,9 +159,6 @@ module.exports.get_classes = (data, resolve, reject) => {
               })
               if (res[j].attr_code) {
                 val.attributes.add(res[j].attr_code);
-                if (val.attributes.length > 1) {
-                  console.log("ATTRSSSSSS", val);
-                }
               }
             }
           }
@@ -204,14 +200,15 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
   Promise.all(class_promises)
     .then((class_results) => {
       class_results = class_results.filter((c) => c.length);
+      if(class_results.length == 0) {
+        resolve({data: [], total: 0, actual: 0});
+        return;
+      }
       let coms = Combinatorics.cartesianProduct(...class_results);
-      console.log("num coms", coms.length);
       let result = coms.filter(isValidSchedule);
-      console.log("result len", result.length);
       let res = [];
       let used = new Set();
       if (result.length < 500) {
-        console.log("shuffling");
         for (i = result.length - 1; i > 0; i--) {
           j = Math.floor(Math.random() * (i + 1));
           x = result[i];
@@ -231,12 +228,56 @@ module.exports.make_schedule = (data, params, resolve, reject) => {
           res.push(result[k]);
         }
       }
-      resolve({
-        data: res,
+      return Promise.props({
+        data: Promise.map(res, (schedule) => {
+          return Promise.props({
+            classes: schedule,
+            rating: schedule.filter((cls) => {
+              return cls.avg_score !== undefined;
+            }).reduce((acc, cls, ind, arr) => {
+              let x = acc + (cls.avg_score / arr.length);
+              return x;
+            }, 0),
+            distance: Promise.reduce(days_of_week, (totalDistance, day, index, length) => {
+              let days_classes = schedule.filter((c) => { return c[day] != null });
+              days_classes.sort((a,b) => {
+                if (a[day].start_time < b[day].start_time) {
+                  return -1;
+                } else if (a[day].start_time == b[day].start_time) {
+                  return 0;
+                } else {
+                  return 1;
+                }
+              })
+              return Promise.reduce(days_classes, (innerDistance, cl, index, length) => {
+                if(index >= length - 1) {
+                  return innerDistance;
+                }
+                return db.pool.query("SELECT * FROM distance_from WHERE building1 = $1 AND building2 = $2", [cl[day].building, days_classes[index+1][day].building]).then((resp) => {
+                  resp = resp.rows;
+                  // if same building
+                  if(resp.length == 0) {
+                    return innerDistance;
+                  }
+                  else if(resp[0].distance_miles != "NaN") {
+                    return innerDistance + parseFloat(resp[0].distance_miles);
+                  }
+                  // if Nan distance
+                  return innerDistance + .1;
+                });
+              }, 0).then((innerDistance) => {return totalDistance + innerDistance; });
+            }, 0).then((total) => { return total; })
+          })
+        }),
         total: result.length,
         actual: res.length
       });
-    }).catch(reject);
+    })
+    .then((res) => {
+      console.log('hi mom', res);
+      resolve(res);
+    })
+    .catch(reject);
 }
 
 let filter_index = 0;
@@ -248,7 +289,7 @@ isValidSchedule = (classes) => {
   if (classes.length == 0) return false;
 
   for (let day of days_of_week) {
-    days_classes = classes.filter((c) => { return c[day] != null });
+    let days_classes = classes.filter((c) => { return c[day] != null });
     days_classes.sort((a,b) => {
       if (a[day].start_time < b[day].start_time) {
         return -1;
