@@ -31,7 +31,7 @@
     "start": "nuxt start",
     "gen": "nuxt generate",
     "mocha": "mocha test/ --recursive",
-    "heroku-postbuild": "npm run generate"
+     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "async": "^2.5.0",
