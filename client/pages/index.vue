@@ -8,7 +8,7 @@
         ></v-text-field>
         <v-select
           v-model="campus"
-          label="Campus"
+          label="Building"
           :items="campus_list"
         ></v-select>
         <v-text-field
@@ -151,7 +151,7 @@
       // contact the backend service for {} [] {} = all ] logs
       return feathers.service( 'database' ).get(["class", "subject", "attributes"])
       .then( ( resp ) => {
-        return { 
+        return {
           attribute_list: [""].concat(resp.attributes.rows.map(n => n.attr_code)),
           subject_list: [""].concat(resp.subjects.rows.map(n => n.abbreviation)),
           campus_list: [""].concat(resp.buildings.rows.map(n => n.name))
@@ -177,7 +177,7 @@
         .then( ( resp ) => {
           console.log(resp)
           this.resp = resp || []
-          return { 
+          return {
             resp: resp
           }
         })

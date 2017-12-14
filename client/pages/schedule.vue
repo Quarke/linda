@@ -45,12 +45,12 @@
                 <v-btn @click="submit" color="green">Add</v-btn>
                 <v-btn @click="clear" color="red">Clear</v-btn>
               </form>
-              
+
             </v-card>
-            
+
           </v-stepper-content>
           <v-stepper-content step="2">
-            <v-card color="lighten-1" class="mb-5">  
+            <v-card color="lighten-1" class="mb-5">
                <v-layout row wrap>
                 <v-flex xs11 sm5>
                   <v-menu
@@ -131,7 +131,7 @@
                   >
                     <v-list-tile-content>
                       <v-list-tile-title>Subjects:{{ item.subjects.toString() }}</v-list-tile-title>
-                      <v-list-tile-sub-title class="grey--text text--darken-4">Arritbutes: {{ item.attributes.toString() }}</v-list-tile-sub-title>
+                      <v-list-tile-sub-title class="grey--text text--darken-4">Atrributes: {{ item.attributes.toString() }}</v-list-tile-sub-title>
                       <v-list-tile-sub-title>Course Number Range: {{ item.min_cnum }} - {{item.max_cnum}}</v-list-tile-sub-title>
                     </v-list-tile-content>
                     <v-list-tile-action>
@@ -145,7 +145,7 @@
               <v-btn color="green" v-if="queries.length != 0" @click="make_schedule_request().then(change_live_result)"> Submit </v-btn>
             </v-card>
           </v-stepper-content>
-          
+
           <v-stepper-content step="3">
               <form>
                 <v-text-field
@@ -162,12 +162,12 @@
                   v-model="active_crns"
                   multiple
                   chips
-                  hint="Select Subjects"
+                  hint="Select CRNs"
                   persistent-hint
                 ></v-select>
                 <v-btn @click="filter" color="green">Apply</v-btn>
               </form>
-            
+
             <v-card color="lighten-1" class="mb-5">
               <v-expansion-panel expand>
                 <v-expansion-panel-content v-for="(course, i) in live_result" :key="i">
@@ -192,7 +192,7 @@
                   </v-card>
                 </v-expansion-panel-content>
               </v-expansion-panel>
-              <v-btn flat @click="copy_to_clipboard()"> Copy to Clipboard </v-btn>
+              <v-btn flat @click="copy_to_clipboard()"> Copy CRNs to Clipboard </v-btn>
               <v-chip label outline color="green">Average Professor Rating: {{curr_avg}}</v-chip>
               <v-chip label outline color="green">Average Distance Between Classes: {{curr_avg_dist}}</v-chip>
               <div class="text-xs-center">
@@ -251,7 +251,7 @@
       // contact the backend service for {} [] {} = all ] logs
       return feathers.service( 'database' ).get(["class", "subject", "attributes"])
       .then( ( resp ) => {
-        return { 
+        return {
           attribute_list: resp.attributes.rows.map(n => n.attr_code),
           subject_list: resp.subjects.rows.map(n => n.abbreviation),
           campus_list: resp.buildings.rows.map(n => n.name)
@@ -267,7 +267,7 @@
         .then( ( resp ) => {
           console.log(resp.rows[0])
           this.resp = resp || "No results"
-          return { 
+          return {
             resp: resp
           }
         })
@@ -334,7 +334,7 @@
         console.log(this.macro_results)
         let new_list = JSON.parse(JSON.stringify(this.macro_results))
         console.log(new_list)
-        
+
         if( this.filter_rating ) {
           new_list = new_list.filter(n => n.rating >= this.filter_rating)
         }
@@ -376,7 +376,7 @@
           }
           console.log(crns_list)
           self.crn_list = Array.from(crns_list).sort()
-          return { 
+          return {
             results: resp.data, marco_results: resp.data, crn_list: Array.from(crns_list).sort()
           }
         })
