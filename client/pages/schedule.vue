@@ -147,6 +147,27 @@
           </v-stepper-content>
           
           <v-stepper-content step="3">
+              <form>
+                <v-text-field
+                  label="Keyword"
+                  v-model="filter_keyword"
+                ></v-text-field>
+                <v-text-field
+                  label="Minimum rating"
+                  v-model="filter_rating"
+                ></v-text-field>
+                <v-select
+                  label="Select"
+                  v-bind:items="crn_list"
+                  v-model="active_crns"
+                  multiple
+                  chips
+                  hint="Select Subjects"
+                  persistent-hint
+                ></v-select>
+                <v-btn @click="filter" color="green">Apply</v-btn>
+              </form>
+            
             <v-card color="lighten-1" class="mb-5">
               <v-expansion-panel expand>
                 <v-expansion-panel-content v-for="(course, i) in live_result" :key="i">
@@ -171,6 +192,9 @@
                   </v-card>
                 </v-expansion-panel-content>
               </v-expansion-panel>
+              <v-btn flat @click="copy_to_clipboard()"> Copy to Clipboard </v-btn>
+              <v-chip label outline color="green">Average Professor Rating: {{curr_avg}}</v-chip>
+              <v-chip label outline color="green">Average Distance Between Classes: {{curr_avg_dist}}</v-chip>
               <div class="text-xs-center">
                 <v-pagination :length="results.length" v-model="page" :total-visible="10"></v-pagination>
               </div>
@@ -202,6 +226,10 @@
       active_subj: [],
       attribute_list: [],
       subject_list: [],
+      crn_list: [],
+      active_crns: [],
+      filter_rating: null,
+      filter_keyword: null,
       select: null,
       checkbox: false,
       e1: 0,
@@ -214,7 +242,10 @@
       sunday: false,
       live_index: 0,
       live_result: null,
-      results: []
+      results: [],
+      macro_results: [],
+      curr_avg: 0,
+      curr_avg_dist: 0
     }),
     asyncData (context) {
       // contact the backend service for {} [] {} = all ] logs
@@ -248,6 +279,21 @@
         console.log(this.resp)
       },
 
+      copy_to_clipboard: function() {
+        let copyText = this.live_result.map(n => n.crn).toString()
+        var dummy = document.createElement("input");
+        //dummy.style.display = 'none'
+        document.body.appendChild(dummy);
+        //$(dummy).css('display','none');
+        dummy.setAttribute("id", "dummy_id");
+        //dummy.setAttribute('value', document.URL + '; ' + document.title)
+        dummy.setAttribute('value', `${copyText}`)
+        //document.getElementById("dummy_id").value=val;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy)
+      },
+
       change_live_result (shift){
         console.log("in ze method")
         console.log(this.results)
@@ -260,12 +306,16 @@
           this.live_index = shift;
           console.log(this.live_index)
 
-          this.live_index = this.live_index <= 0 ? 0 : this.live_index >= this.results.legnth - 1 ? this.results.legnth - 1 : this.live_index;
+          this.live_index = this.live_index <= 0 ? 0 : this.live_index >= this.results.length - 1 ? this.results.length - 1 : this.live_index;
 
           console.log(this.live_index)
 
           let curr_result = this.results[this.live_index]
-          this.live_result = curr_result
+          this.live_result = curr_result.classes.sort(function(a, b)  {
+            return parseInt(a.course_number) - parseInt(b.course_number)
+          })
+          this.curr_avg = curr_result.rating
+          this.curr_avg_dist = curr_result.distance
           console.log(this.live_result)
         }
       },
@@ -277,6 +327,29 @@
           "attributes": this.active_attr
         }
         this.queries.push(new_query)
+      },
+      filter () {
+        //modify live result to trim down its size
+        //using active_crns, filter_keyword, filter_rating
+        console.log(this.macro_results)
+        let new_list = JSON.parse(JSON.stringify(this.macro_results))
+        console.log(new_list)
+        
+        if( this.filter_rating ) {
+          new_list = new_list.filter(n => n.rating >= this.filter_rating)
+        }
+
+        if(this.filter_keyword) {
+          this.filter_keyword = this.filter_keyword.toLowerCase()
+          new_list = new_list.filter(x => x.classes.find( n => n.title.toLowerCase().indexOf(this.filter_keyword) > -1 ) != undefined )
+        }
+
+        if(this.active_crns.length > 0) {
+          new_list = new_list.filter(x => x.classes.find( n => this.active_crns.indexOf(n.crn) > -1 ) != undefined )
+        }
+
+        this.results = new_list
+        this.change_live_result()
       },
       clear () {
         this.min_cnum = ''
@@ -292,8 +365,19 @@
           resp.data = resp.data.filter(n => n)
           console.log(resp.data)
           self.results = resp.data
+          self.macro_results = resp.data
+          let crns_list = new Set()
+          for(let entry of resp.data) {
+            for(let course of entry.classes){
+              if(course.crn){
+                crns_list.add(course.crn)
+              }
+            }
+          }
+          console.log(crns_list)
+          self.crn_list = Array.from(crns_list).sort()
           return { 
-            results: resp.data
+            results: resp.data, marco_results: resp.data, crn_list: Array.from(crns_list).sort()
           }
         })
         .catch( err => {
